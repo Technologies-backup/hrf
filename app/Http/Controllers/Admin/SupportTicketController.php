@@ -1,0 +1,77 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\CPU\Helpers;
+use App\Http\Controllers\Controller;
+use App\Model\Admin;
+use App\Model\SupportTicket;
+use App\Model\SupportTicketConv;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+
+use function App\CPU\translate;
+
+class SupportTicketController extends Controller
+{
+    public function index(Request $request)
+    {
+        $query_param = [];
+        $search = $request['search'];
+        if ($request->has('search'))
+        {
+            $key = explode(' ', $request['search']);
+            $tickets = SupportTicket::orderBy('id','desc')
+                                        ->where(function ($q) use ($key) {
+                                            foreach ($key as $value) {
+                                                $q->Where('subject', 'like', "%{$value}%");
+                                            }
+                                        });
+            $query_param = ['search' => $request['search']];
+        }else{
+            $tickets=SupportTicket::orderBy('id','desc');
+        }
+        $tickets = $tickets->paginate(Helpers::pagination_limit())->appends($query_param);
+        return view('admin-views.support-ticket.view',compact('tickets','search'));
+    }
+
+    public function status(Request $request){
+        if($request->ajax())
+        {
+            $currency = SupportTicket::find($request->id);
+            $currency->status = $request->status;
+            $currency->save();
+        }
+    }
+    public function single_ticket($id){
+        $supportTicket = SupportTicket::where('id',$id)->get();
+        return view('admin-views.support-ticket.singleView',compact('supportTicket'));
+    }
+    public function replay_submit(Request $request){
+
+        $reply=[
+            'admin_message'=>$request->replay,
+            'admin_id'=>$request->adminId,
+            'support_ticket_id'=>$request->id,
+            'created_at' => now(),
+            'updated_at' => now()
+        ];
+        SupportTicketConv::insert($reply);
+
+
+        $admin = Admin::where(['id' => $request->adminId])->first();
+        $supportTicket = SupportTicket::where('id',$request->id)->first();
+        $user = $supportTicket->user;
+
+        $data = [
+            'title' => translate('New Message From ') . ucfirst($admin->name),
+            'description' => $request->replay,
+            'order_id' => null,
+            'image' => '',
+        ];
+        Helpers::send_push_notif_to_device($user->cm_firebase_token, $data);
+
+        return redirect()->back();
+    }
+
+}

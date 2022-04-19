@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+Sitemap: https://hrfhome.app/sitemap.xml
+Sitemap: https://hrfhome.app/sitemap0.xml
+Sitemap: https://hrfhome.app/sitemap1.xml
+Sitemap: https://hrfhome.app/sitemap2.xml
+Sitemap: https://hrfhome.app/sitemap3.xml
+Sitemap: https://hrfhome.app/sitemap4.xml
+Sitemap: https://hrfhome.app/sitemap5.xml
+Sitemap: https://hrfhome.app/sitemap6.xml
+Sitemap: https://hrfhome.app/sitemap7.xml
+Sitemap: https://hrfhome.app/sitemap8.xml
+Sitemap: https://hrfhome.app/sitemap9.xml
+Sitemap: https://hrfhome.app/sitemap10.xml
+Sitemap: https://hrfhome.app/sitemap11.xml
+Sitemap: https://hrfhome.app/sitemap12.xml
